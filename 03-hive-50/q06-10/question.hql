@@ -13,7 +13,7 @@ CREATE TABLE tbl0 (
     c2 STRING,
     c3 INT,
     c4 DATE,
-    c5 ARRAY<CHAR(1)>, 
+    c5 STRING, 
     c6 MAP<STRING, INT>
 )
 ROW FORMAT DELIMITED 
@@ -40,4 +40,9 @@ LOAD DATA LOCAL INPATH 'tbl1.csv' INTO TABLE tbl1;
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
 
+INSERT OVERWRITE DIRECTORY '/tmp/output/' 
 
+SELECT UPPER(c5)
+FROM tbl0 ;
+
+!hadoop fs -copyToLocal /tmp/output output;

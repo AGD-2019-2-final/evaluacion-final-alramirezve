@@ -18,14 +18,18 @@
 -- 
 fs -rm -f -r output;
 -- 
-u = LOAD 'data.csv' USING PigStorage(',') 
+fs -put -f data.csv;
+datos = LOAD 'data.csv' USING PigStorage(',')    
     AS (id:int, 
         firstname:CHARARRAY, 
         surname:CHARARRAY, 
         birthday:CHARARRAY, 
         color:CHARARRAY, 
         quantity:INT);
---
--- >>> Escriba su respuesta a partir de este punto <<<
---
+cols = FOREACH datos GENERATE SUBSTRING(color,0,1) AS ini,firstname,color;
+--filtro = FILTER cols BY (ini != 'b'); 
+filtro = FILTER cols BY (color MATCHES 'blue|green');
+result = FOREACH filtro GENERATE firstname,color;
+STORE result INTO 'output' using PigStorage('\t');
+fs -get -f output/ .
 

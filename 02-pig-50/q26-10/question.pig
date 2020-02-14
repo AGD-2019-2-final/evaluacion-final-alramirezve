@@ -17,13 +17,16 @@
 -- 
 fs -rm -f -r output;
 --
-u = LOAD 'data.csv' USING PigStorage(',') 
+fs -put -f data.csv;
+datos = LOAD 'data.csv' USING PigStorage(',')    
     AS (id:int, 
         firstname:CHARARRAY, 
         surname:CHARARRAY, 
         birthday:CHARARRAY, 
         color:CHARARRAY, 
         quantity:INT);
---
--- >>> Escriba su respuesta a partir de este punto <<<
---
+cols = FOREACH datos GENERATE firstname,SUBSTRING(firstname,0,1) AS ini;
+filtro = FILTER cols BY  (ini >= 'M');
+resultado = FOREACH filtro GENERATE firstname;
+STORE resultado INTO 'output';
+fs -get -f output/ .

@@ -30,14 +30,17 @@
 -- 
 fs -rm -f -r output;
 --
-u = LOAD 'data.csv' USING PigStorage(',') 
+fs -put -f data.csv;
+datos = LOAD 'data.csv' USING PigStorage(',')    
     AS (id:int, 
         firstname:CHARARRAY, 
         surname:CHARARRAY, 
         birthday:CHARARRAY, 
         color:CHARARRAY, 
         quantity:INT);
---
--- >>> Escriba su respuesta a partir de este punto <<<
---
+cols = FOREACH datos GENERATE birthday,ToDate(birthday,'yyyy-mm-dd') as fecha;
+anio = FOREACH cols GENERATE birthday,ToString(fecha,'dd') as day1,ToString(fecha,'d') as day2,ToString(fecha,'EE') as diad;
+dias = FOREACH anio GENERATE birthday,day1,day2,(diad == 'Mon' ? 'Lun' : (diad == 'Tue' ? 'Mar' : (diad == 'Wed' ? 'Mie' : (diad == 'Thu' ? 'Jue' : (diad == 'Fri' ? 'Vie' : (diad == 'Sat' ? 'Sab' : 'Dom')))))),
+    (diad == 'Mon' ? 'Lunes' : (diad == 'Tue' ? 'Martes' : (diad == 'Wed' ? 'Miercoles' : (diad == 'Thu' ? 'Jueves' : (diad == 'Fri' ? 'Viernes' : (diad == 'Sat' ? 'Sabado' : 'Domingo'))))));
 
+STORE dias INTO 'output' using PigStorage(',');

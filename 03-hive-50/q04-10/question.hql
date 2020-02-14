@@ -39,4 +39,13 @@ LOAD DATA LOCAL INPATH 'tbl1.csv' INTO TABLE tbl1;
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+INSERT OVERWRITE DIRECTORY '/tmp/output/'
 
+SELECT DISTINCT ex_c5
+FROM
+    tbl0
+LATERAL VIEW
+    explode(c5) tbl0 AS ex_c5
+ORDER BY ex_c5;
+
+!hadoop fs -copyToLocal /tmp/output output;

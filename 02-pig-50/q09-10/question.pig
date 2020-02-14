@@ -27,5 +27,17 @@
 -- 
 fs -rm -f -r output;
 --
+fs -put -f data.csv;
 
+datos = LOAD 'data.csv' USING PigStorage(',') AS (
+        col1::INT,
+        col2:CHARARRAY,
+        col3:CHARARRAY,
+        col4:CHARARRAY,
+        col5:CHARARRAY,
+        col6:INT
+        );
+cols = FOREACH datos GENERATE col2,col3;
+STORE cols INTO 'output' using PigStorage('@');
+fs -get -f output/ .
 

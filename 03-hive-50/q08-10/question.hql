@@ -41,4 +41,12 @@ LOAD DATA LOCAL INPATH 'tbl1.csv' INTO TABLE tbl1;
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
 
+INSERT OVERWRITE DIRECTORY '/tmp/output/' 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
 
+select c2, SUM(coalesce(c6["aa"],0)+coalesce(c6["bb"],0)+coalesce(c6["cc"],0)+coalesce(c6["dd"],0))
+FROM tbl0 
+GROUP BY c2
+ORDER BY c2; 
+
+!hadoop fs -copyToLocal /tmp/output output;

@@ -30,13 +30,16 @@
 -- 
 fs -rm -f -r output;
 -- 
-u = LOAD 'data.csv' USING PigStorage(',') 
+fs -put -f data.csv;
+datos = LOAD 'data.csv' USING PigStorage(',')    
     AS (id:int, 
         firstname:CHARARRAY, 
         surname:CHARARRAY, 
         birthday:CHARARRAY, 
         color:CHARARRAY, 
         quantity:INT);
---
--- >>> Escriba su respuesta a partir de este punto <<<
---
+cols = FOREACH datos GENERATE birthday,ToDate(birthday,'yyyy-mm-dd') as fecha;
+anio = FOREACH cols GENERATE birthday,ToString(fecha,'mm') as mes2,ToString(fecha,'m') as mes1;
+nom = FOREACH anio GENERATE birthday, (mes1 == '1' ? 'ene' : (mes1 == '2' ? 'feb' : (mes1 == '3' ? 'mar' : (mes1 == '4' ? 'abr' : (mes1 == '5' ? 'may' : (mes1 == '6' ? 'jun' : (mes1 == '7' ? 'jul' : (mes1 == '8' ? 'ago' : (mes1 == '9' ? 'sep' : (mes1 == '10' ? 'oct' : (mes1 == '11' ? 'nov' : 'dic'))))))))))),mes2,mes1;
+STORE nom INTO 'output' using PigStorage(',');
+fs -get -f output/ .

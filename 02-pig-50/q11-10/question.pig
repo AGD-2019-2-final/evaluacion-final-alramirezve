@@ -28,13 +28,15 @@
 -- 
 fs -rm -f -r output;
 --
-u = LOAD 'data.csv' USING PigStorage(',') 
+fs -put -f data.csv;
+datos = LOAD 'data.csv' USING PigStorage(',')    
     AS (id:int, 
         firstname:CHARARRAY, 
         surname:CHARARRAY, 
         birthday:CHARARRAY, 
         color:CHARARRAY, 
         quantity:INT);
---
--- >>> Escriba su respuesta a partir de este punto <<<
---
+cols = FOREACH datos GENERATE UCFIRST(surname) AS capital,UPPER(surname),LOWER(surname);
+orden = ORDER cols BY capital ASC;
+STORE orden INTO 'output' using PigStorage(',');
+fs -get -f output/ .

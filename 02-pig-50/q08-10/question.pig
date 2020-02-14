@@ -14,3 +14,15 @@ fs -rm -f -r output;
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+fs -put -f data.tsv;
+
+datos = LOAD 'data.tsv' USING PigStorage('\t') AS (
+        col1:CHARARRAY,
+        col2:BAG{t:(p:CHARARRAY)},
+        col3:MAP[]
+        );
+aplanado = FOREACH datos GENERATE FLATTEN(col2) AS clave,FLATTEN(KEYSET(col3)) AS valor;
+grupo = GROUP aplanado BY (clave,valor);
+cuenta = FOREACH grupo GENERATE group, COUNT(aplanado) AS conteo;
+STORE cuenta INTO 'output' using PigStorage('\t');
+fs -get -f output/ .

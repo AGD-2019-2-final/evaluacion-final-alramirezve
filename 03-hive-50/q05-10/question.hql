@@ -40,3 +40,11 @@ LOAD DATA LOCAL INPATH 'tbl1.csv' INTO TABLE tbl1;
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
 
+INSERT OVERWRITE DIRECTORY '/tmp/output/' 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+
+SELECT date_format(c4,'yyyy'),explo, COUNT(explo)
+FROM tbl0 LATERAL VIEW explode(c5) tbl0 AS explo
+GROUP BY date_format(c4,'yyyy'),explo;
+
+!hadoop fs -copyToLocal /tmp/output output;

@@ -16,13 +16,16 @@
 -- 
 fs -rm -f -r output;
 --
-u = LOAD 'data.csv' USING PigStorage(',') 
+fs -put -f data.csv;
+datos = LOAD 'data.csv' USING PigStorage(',')    
     AS (id:int, 
         firstname:CHARARRAY, 
         surname:CHARARRAY, 
         birthday:CHARARRAY, 
         color:CHARARRAY, 
         quantity:INT);
---
--- >>> Escriba su respuesta a partir de este punto <<<
---
+cols = FOREACH datos GENERATE surname,SIZE(surname) AS tamano;
+orden = ORDER cols BY tamano DESC,surname ASC;
+limite = LIMIT orden 5;
+STORE limite INTO 'output' using PigStorage(',');
+fs -get -f output/ .

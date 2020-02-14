@@ -39,5 +39,12 @@ LOAD DATA LOCAL INPATH 'tbl1.csv' INTO TABLE tbl1;
 --
 -- >>> Escriba su respuesta a partir de este punto <<<
 --
+INSERT OVERWRITE DIRECTORY '/tmp/output/' 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
 
+select c2 , concat_ws(":", collect_list(cast(c1 as STRING)) )
+FROM tbl0 
+GROUP BY c2
+ORDER BY c2; 
 
+!hadoop fs -copyToLocal /tmp/output output;
